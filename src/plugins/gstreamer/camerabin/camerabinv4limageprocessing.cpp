@@ -126,15 +126,7 @@ bool CameraBinV4LImageProcessing::isParameterValueSupported(
     }
         break;
 
-    case QCameraImageProcessingControl::ColorTemperature: {
-        const qint32 checkedValue = value.toInt();
-        if (checkedValue < (*sourceValueInfo).minimumValue
-                || checkedValue > (*sourceValueInfo).maximumValue) {
-            return false;
-        }
-    }
-        break;
-
+    case QCameraImageProcessingControl::ColorTemperature: 
     case QCameraImageProcessingControl::ContrastAdjustment: // falling back
     case QCameraImageProcessingControl::SaturationAdjustment: // falling back
     case QCameraImageProcessingControl::BrightnessAdjustment: // falling back
@@ -191,8 +183,6 @@ QVariant CameraBinV4LImageProcessing::parameter(
                                   : QCameraImageProcessing::WhiteBalanceManual);
 
     case QCameraImageProcessingControl::ColorTemperature:
-        return QVariant::fromValue<qint32>(control.value);
-
     case QCameraImageProcessingControl::ContrastAdjustment: // falling back
     case QCameraImageProcessingControl::SaturationAdjustment: // falling back
     case QCameraImageProcessingControl::BrightnessAdjustment: // falling back
@@ -242,9 +232,6 @@ void CameraBinV4LImageProcessing::setParameter(
         break;
 
     case QCameraImageProcessingControl::ColorTemperature:
-        control.value = value.toInt();
-        break;
-
     case QCameraImageProcessingControl::ContrastAdjustment: // falling back
     case QCameraImageProcessingControl::SaturationAdjustment: // falling back
     case QCameraImageProcessingControl::BrightnessAdjustment: // falling back
@@ -277,8 +264,10 @@ void CameraBinV4LImageProcessing::updateParametersInfo(
             quint32 cid;
             QCameraImageProcessingControl::ProcessingParameter parameter;
         } supportedParametersEntries[] = {
-            { V4L2_CID_AUTO_WHITE_BALANCE, QCameraImageProcessingControl::WhiteBalancePreset },
-            { V4L2_CID_WHITE_BALANCE_TEMPERATURE, QCameraImageProcessingControl::ColorTemperature },
+            // { V4L2_CID_AUTO_WHITE_BALANCE, QCameraImageProcessingControl::WhiteBalancePreset },
+            // { V4L2_CID_WHITE_BALANCE_TEMPERATURE, QCameraImageProcessingControl::ColorTemperature },
+            { V4L2_CID_HUE_AUTO, QCameraImageProcessingControl::WhiteBalancePreset },
+            { V4L2_CID_HUE, QCameraImageProcessingControl::ColorTemperature },
             { V4L2_CID_CONTRAST, QCameraImageProcessingControl::ContrastAdjustment },
             { V4L2_CID_SATURATION, QCameraImageProcessingControl::SaturationAdjustment },
             { V4L2_CID_BRIGHTNESS, QCameraImageProcessingControl::BrightnessAdjustment },
