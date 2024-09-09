@@ -232,9 +232,12 @@ void CameraBinV4LImageProcessing::setParameter(
         break;
 
     case QCameraImageProcessingControl::ColorTemperature:
+    case QCameraImageProcessingControl::BrightnessAdjustment: // falling back
+        control.value = sourceImageProcessingParameterValue(
+                    value.toReal(), (*sourceValueInfo)) + 128;
+        break;
     case QCameraImageProcessingControl::ContrastAdjustment: // falling back
     case QCameraImageProcessingControl::SaturationAdjustment: // falling back
-    case QCameraImageProcessingControl::BrightnessAdjustment: // falling back
     case QCameraImageProcessingControl::SharpeningAdjustment:
         control.value = sourceImageProcessingParameterValue(
                     value.toReal(), (*sourceValueInfo));
@@ -243,7 +246,7 @@ void CameraBinV4LImageProcessing::setParameter(
     default:
         return;
     }
- 	
+
     if (::ioctl(resource.fd(), VIDIOC_S_CTRL, &control) != 0)
         qWarning() << "Unable to set the parameter value:" << parameter << ":" << qt_error_string(errno);
 }
@@ -287,7 +290,11 @@ void CameraBinV4LImageProcessing::updateParametersInfo(
 
             SourceParameterValueInfo sourceValueInfo;
             sourceValueInfo.cid = queryControl.id;
-            sourceValueInfo.defaultValue = queryControl.default_value;
+			if (supportedParametersEntries[i].cid == V4L2_CID_BRIGHTNESS || supportedParametersEntries[i].cid == V4L2_CID_HUE) {
+				sourceValueInfo.defaultValue = 128;
+			} else {
+				sourceValueInfo.defaultValue = queryControl.default_value;
+			}
             sourceValueInfo.maximumValue = queryControl.maximum;
             sourceValueInfo.minimumValue = queryControl.minimum;
 		
